@@ -44,12 +44,9 @@ class YOLODataset(Dataset):
         ).tolist()
         img_path = os.path.join(self.img_dir, self.annotations.iloc[index, 0])
         image = np.array(Image.open(img_path).convert("RGB"))
-        labels = [int(box[0]) for box in bboxes]
 
         if self.transform:
-            augmentations = self.transform(
-                image=image, bboxes=bboxes, class_labels=labels
-            )
+            augmentations = self.transform(image=image, bboxes=bboxes)
             image = augmentations["image"]
             bboxes = augmentations["bboxes"]
 
