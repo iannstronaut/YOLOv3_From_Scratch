@@ -1,0 +1,8 @@
+torch>=1.10.0
+numpy
+pandas
+Pillow
+tqdm
+albumentations>=1.0.0
+opencv-python
+matplotlib
