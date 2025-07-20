@@ -101,7 +101,6 @@ class YOLOv3(nn.Module):
                 continue
 
             x = layer(x)
-            print(x.shape)
 
             if isinstance(layer, ResidualBlock) and layer.num_repeats == 8:
                 route_connections.append(x)

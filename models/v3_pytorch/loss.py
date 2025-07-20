@@ -32,7 +32,7 @@ class YOLOLoss(nn.Module):
                 self.sigmoid(prediction[..., 1:3]),
                 torch.exp(prediction[..., 3:5] * anchors),
             ],
-            dim=1,
+            dim=-1,
         )
         ious = intersection_over_union(box_preds[obj], target[..., 1:5][obj]).detach()
         object_loss = self.bce(

@@ -40,7 +40,7 @@ class YOLODataset(Dataset):
     def __getitem__(self, index):
         label_path = os.path.join(self.label_dir, self.annotations.iloc[index, 1])
         bboxes = np.roll(
-            np.loadtxt(fname=label_path, delimiter=" ", ndim=2), 4, axis=1
+            np.loadtxt(fname=label_path, delimiter=" ", ndmin=2), 4, axis=1
         ).tolist()
         img_path = os.path.join(self.img_dir, self.annotations.iloc[index, 0])
         image = np.array(Image.open(img_path).convert("RGB"))
@@ -67,7 +67,7 @@ class YOLODataset(Dataset):
 
                 if not anchor_taken and not has_anchor[scale_idx]:
                     targets[scale_idx][anchor_on_scale, i, j, 0] = 1
-                    x_cell, y_cell = S * x - j
+                    x_cell, y_cell = S * x - j, S * Y - i
                     width_cell, height_cell = (width * S, height * S)
                     box_coordinates = torch.tensor(
                         [x_cell, y_cell, width_cell, height_cell]
