@@ -19,6 +19,10 @@ class YOLOLoss(nn.Module):
     def forward(self, prediction, target, anchors):
         obj = target[..., 0] == 1
         noobj = target[..., 0] == 0
+        
+        if obj.sum() == 0:
+            print("Tidak ada object yang diassign ke anchor. Cek ukuran anchor vs box.")
+
 
         # No object loss
         no_object_loss = self.bce(

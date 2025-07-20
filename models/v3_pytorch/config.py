@@ -12,7 +12,7 @@ NUM_WORKERS = 4
 BATCH_SIZE = 32
 IMAGE_SIZE = 416
 NUM_CLASSES = 20
-LEARNING_RATE = 3e-4
+LEARNING_RATE = 3e-4 
 WEIGHT_DECAY = 0  # 5e-4
 NUM_EPOCHS = 100
 CONF_THRESHOLD = 0.4
@@ -49,7 +49,7 @@ train_transforms = A.Compose(
                 A.ShiftScaleRotate(
                     rotate_limit=20, p=0.5, border_mode=cv2.BORDER_CONSTANT
                 ),
-                A.Affine(shear={"x": 15, "y": 0}, p=0.5, mode="constant"),
+                A.Affine(shear={"x": 15, "y": 0}, p=0.5),
             ],
             p=1.0,
         ),
@@ -69,7 +69,7 @@ train_transforms = A.Compose(
     bbox_params=A.BboxParams(
         format="yolo",
         min_visibility=0.4,
-        label_fields=[],
+        label_fields=["class_labels"],
     ),
 )
 test_transforms = A.Compose(
@@ -85,7 +85,9 @@ test_transforms = A.Compose(
         ),
         ToTensorV2(),
     ],
-    bbox_params=A.BboxParams(format="yolo", min_visibility=0.4, label_fields=[]),
+    bbox_params=A.BboxParams(
+        format="yolo", min_visibility=0.4, label_fields=["class_labels"]
+    ),
 )
 
 PASCAL_CLASSES = [

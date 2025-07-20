@@ -44,9 +44,12 @@ class YOLODataset(Dataset):
         ).tolist()
         img_path = os.path.join(self.img_dir, self.annotations.iloc[index, 0])
         image = np.array(Image.open(img_path).convert("RGB"))
+        labels = [int(box[0]) for box in bboxes]
 
         if self.transform:
-            augmentations = self.transform(image=image, bboxes=bboxes)
+            augmentations = self.transform(
+                image=image, bboxes=bboxes, class_labels=labels
+            )
             image = augmentations["image"]
             bboxes = augmentations["bboxes"]
 
@@ -55,19 +58,19 @@ class YOLODataset(Dataset):
         for box in bboxes:
             iou_anchors = iou(torch.tensor(box[2:4]), self.anchors)
             anchor_indicies = iou_anchors.argsort(descending=True, dim=0)
-            x, Y, width, height, class_label = box
+            x, y, width, height, class_label = box
             has_anchor = [False, False, False]
 
             for anchor_idx in anchor_indicies:
                 scale_idx = anchor_idx // self.num_anchors_per_scale
                 anchor_on_scale = anchor_idx % self.num_anchors_per_scale
                 S = self.S[scale_idx]
-                i, j = int(S * Y), int(S * x)
+                i, j = int(S * y), int(S * x)
                 anchor_taken = targets[scale_idx][anchor_on_scale, i, j, 0]
 
                 if not anchor_taken and not has_anchor[scale_idx]:
                     targets[scale_idx][anchor_on_scale, i, j, 0] = 1
-                    x_cell, y_cell = S * x - j, S * Y - i
+                    x_cell, y_cell = S * x - j, S * y - i
                     width_cell, height_cell = (width * S, height * S)
                     box_coordinates = torch.tensor(
                         [x_cell, y_cell, width_cell, height_cell]

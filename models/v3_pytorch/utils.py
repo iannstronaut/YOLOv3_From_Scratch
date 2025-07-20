@@ -98,8 +98,15 @@ def non_max_suppression(bboxes, iou_threshold, threshold, box_format="corners"):
     assert type(bboxes) == list
 
     bboxes = [box for box in bboxes if box[1] > threshold]
+    if not bboxes:
+        print("No boxes passed confidence threshold.")
+        return []
+    
     bboxes = sorted(bboxes, key=lambda x: x[1], reverse=True)
     bboxes_after_nms = []
+
+    iteration = 0
+    max_iterations = 10000
 
     while bboxes:
         chosen_box = bboxes.pop(0)
@@ -295,7 +302,9 @@ def get_evaluation_bboxes(
     train_idx = 0
     all_pred_boxes = []
     all_true_boxes = []
+    print("Evaluating...")
     for batch_idx, (x, labels) in enumerate(tqdm(loader)):
+        print(f" Processing batch {batch_idx+1}/{len(loader)}")
         x = x.to(device)
 
         with torch.no_grad():
